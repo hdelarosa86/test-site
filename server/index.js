@@ -46,6 +46,8 @@ const startServer = () =>
 
 if (process.env.NODE_ENV === 'production') {
   db.sync()
+    .then(authenticateDB)
+    .then(seed)
     .then(startServer)
     .then(() => {
       console.log(
