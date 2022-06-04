@@ -12,7 +12,7 @@ const seed = () => {
           email: 'johnDoe@gmail.com',
           username: 'johndoe',
           password: 'password2',
-          admin:false
+          admin: false,
         },
         {
           firstName: 'Jane',
@@ -153,8 +153,6 @@ const seed = () => {
   // );
 };
 
-module.exports = seed;
-
 if (require.main === module) {
   seed()
     .then(() => {
@@ -167,3 +165,5 @@ if (require.main === module) {
       db.close();
     });
 }
+
+module.exports = seed;

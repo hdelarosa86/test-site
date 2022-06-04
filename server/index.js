@@ -3,13 +3,14 @@ const path = require('path');
 const { db } = require('./db');
 const colors = require('colors');
 const cookieParser = require('cookie-parser');
+const seed = require('../seed');
+const { User, authenticateDB } = require('./db');
 
 //initialize express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 //cookie parser
-app.use(cookieParser());
 
 //body parsing middleware
 app.use(express.json());
@@ -23,12 +24,14 @@ app.use((req, res, next) => {
 // static middleware
 app.use(express.static(path.join(__dirname, '../static')));
 
-//cookie
-//app.use(require('./cookies'));
-
-// api routes
-//app.use('/api', require('./api'));
-
+app.get('/api/users', async (req, res, next) => {
+  try {
+    const users = await User.findAll();
+    res.status(200).send(users);
+  } catch (err) {
+    console.error(`${err}: Could not find users.`);
+  }
+});
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../static/index.html'));
 }); // Send index.html for any other requests
@@ -36,7 +39,7 @@ app.get('*', (req, res) => {
 const startServer = () =>
   new Promise((res) => {
     app.listen(PORT, () => {
-      console.log(colors.bgYellow("I'm running on", PORT));
+      console.log(colors.bgYellow(`Listening on: http://localhost:${PORT}/\n`));
       res(true);
     });
   });
@@ -56,6 +59,7 @@ if (process.env.NODE_ENV === 'production') {
     });
 } else {
   db.sync()
+    .then(authenticateDB)
     .then(seed)
     .then(startServer)
     .then(() => {
